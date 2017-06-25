@@ -6,31 +6,34 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.os.StrictMode;
 import android.util.Log;
+import android.util.LruCache;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.util.ArrayList;
 
 public class MainActivity extends Activity {
 
     private static final String TAG = "MainActivity";
     AIDLServiceInterface service;
     AIDLServiceConnection connection;
+    private LruCache<String, Bitmap> memoryCache;
 
     private Button rechercher_btn;
-    private TextView log_tv;
-    private EditText numeroImage_tf;
+    private Button vider_btn;
+    private Spinner index_lst;
+    private CheckBox dispo_cb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,14 +47,42 @@ public class MainActivity extends Activity {
             StrictMode.setThreadPolicy(policy);
         }
 
+        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+        final int cacheSize = maxMemory / 8;
+
+        memoryCache = new LruCache<String, Bitmap>(cacheSize) {
+            @Override
+            protected int sizeOf(String key, Bitmap bitmap) {
+                return bitmap.getByteCount() / 1024;
+            }
+        };
+
        rechercher_btn = (Button) findViewById(R.id.rechercher_btn);
-        log_tv = (TextView) findViewById(R.id.log_tv);
-        numeroImage_tf = (EditText) findViewById(R.id.numeroImage_tf);
+        vider_btn = (Button) findViewById(R.id.vider_btn);
+        index_lst = (Spinner) findViewById(R.id.index_lst);
+        dispo_cb = (CheckBox) findViewById(R.id.dispo_cb);
+
+        setIndexLst();
 
         rechercher_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 rechercherImage(v);
+            }
+        });
+
+        vider_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                memoryCache.evictAll();
+                setIndexLst();
+            }
+        });
+
+        dispo_cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                setIndexLst();
             }
         });
     }
@@ -72,15 +103,18 @@ public class MainActivity extends Activity {
     }
 
     public void rechercherImage(View v) {
-        String numero = numeroImage_tf.getText().toString();
-        log_tv.setText("Recherche de l'image "+numero);
 
-        Bitmap bitmap = null;
-        try {
-            bitmap = service.getImage(3);
-        } catch (RemoteException e) {
-            Log.i(TAG, "Data fetch failed with: " + e);
-            e.printStackTrace();
+        String index = (String)index_lst.getSelectedItem();
+        Bitmap bitmap = getBitmapFromMemCache(index);
+
+        if(bitmap==null) {
+            try {
+                bitmap = service.getImage(Integer.parseInt(index));
+                addBitmapToMemoryCache(index, bitmap);
+            } catch (RemoteException e) {
+                Log.i(TAG, "Data fetch failed with: " + e);
+                e.printStackTrace();
+            }
         }
 
         afficherImage(bitmap);
@@ -90,6 +124,43 @@ public class MainActivity extends Activity {
         ImageView view = (ImageView) findViewById(R.id.imageView);
         view.setImageBitmap(bitmap);
     }
+
+    public void setIndexLst(){
+        ArrayList<String> data;
+        if(dispo_cb.isChecked()){
+            data = getIndexLstFromMemCache();
+        }else {
+            data = new ArrayList<String>();
+            for (int i = 0; i < 50; i++) {
+                data.add(Integer.toString(i));
+            }
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, data);
+        index_lst.setAdapter(adapter);
+    }
+
+    public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+        if (getBitmapFromMemCache(key) == null) {
+            memoryCache.put(key, bitmap);
+        }
+    }
+
+    public Bitmap getBitmapFromMemCache(String key) {
+        return memoryCache.get(key);
+    }
+
+    public ArrayList<String> getIndexLstFromMemCache(){
+        ArrayList<String> cache_index_lst = new ArrayList<String>();
+        for(int i = 0; i<50; i++){
+            String key = Integer.toString(i);
+            if (getBitmapFromMemCache(key) != null) {
+                cache_index_lst.add(key);
+            }
+        }
+        return cache_index_lst;
+    }
+
 
 
 

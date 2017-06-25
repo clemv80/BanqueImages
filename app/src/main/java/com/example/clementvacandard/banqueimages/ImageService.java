@@ -10,7 +10,6 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 
 public class ImageService extends Service {
 
@@ -44,7 +43,7 @@ public class ImageService extends Service {
                 Bitmap Image = Bitmap.createBitmap(100, 10, Bitmap.Config.RGB_565);
 
 
-                String src = "http://192.168.1.15:8888/image.php?face="+index;
+                String src = "http://192.168.0.11:8888/image.php?face="+index;
                 System.out.println(src);
                 //String src = "http://www.androidbegin.com/wp-content/uploads/2013/07/HD-Logo.gif";
                 Bitmap bitmap = null;

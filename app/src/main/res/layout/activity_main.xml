@@ -11,40 +11,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.clementvacandard.banqueimages.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:id="@+id/log_tv"
-        android:layout_alignParentEnd="true" />
-
-    <TextView
-        android:text="Rechercher image :"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView2"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:ems="10"
-        android:id="@+id/numeroImage_tf"
-        android:layout_below="@+id/textView2"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp" />
-
-    <Button
-        android:text="Afficher"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/rechercher_btn"
-        android:layout_below="@+id/numeroImage_tf"
-        android:layout_centerHorizontal="true" />
-
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -53,6 +19,48 @@
         android:adjustViewBounds="false"
         android:layout_below="@+id/rechercher_btn"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="37dp" />
+        android:layout_marginTop="72dp" />
+
+    <TextView
+        android:text="Index de l'image :"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView2"
+        android:layout_alignBaseline="@+id/rechercher_btn"
+        android:layout_alignBottom="@+id/rechercher_btn"
+        android:layout_alignParentStart="true" />
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/index_lst"
+        android:layout_alignTop="@+id/textView2"
+        android:layout_alignEnd="@+id/dispo_cb" />
+
+    <CheckBox
+        android:text="Disponibles uniquement"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/dispo_cb"
+        android:layout_below="@+id/rechercher_btn"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="14dp" />
+
+    <Button
+        android:text="Afficher"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/rechercher_btn"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignStart="@+id/vider_btn" />
+
+    <Button
+        android:text="Vider le cache"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/vider_btn"
+        android:layout_below="@+id/rechercher_btn"
+        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>
