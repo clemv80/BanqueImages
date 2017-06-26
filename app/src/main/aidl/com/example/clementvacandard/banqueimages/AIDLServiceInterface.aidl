@@ -5,7 +5,8 @@ package com.example.clementvacandard.banqueimages;
 
 interface AIDLServiceInterface {
 
-       int add(in int ValueFirst, in int valueSecond);
 
        Bitmap getImage(in int index);
+
+       int[] getListImage();
 }

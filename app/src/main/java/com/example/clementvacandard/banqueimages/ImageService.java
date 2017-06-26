@@ -10,6 +10,8 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
 
 public class ImageService extends Service {
 
@@ -27,23 +29,13 @@ public class ImageService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
 
-        return new AIDLServiceInterface.Stub() {
-            /**
-             * In the AIDL file we just add the declaration of the function
-             * here is the real implementation of the add() function below
-             */
-            public int add(int ValueFirst, int valueSecond) throws RemoteException {
-                Log.i(TAG, String.format("AddService.add(%d, %d)", ValueFirst, valueSecond));
-                return (ValueFirst + valueSecond);
-            }
+        return new AIDLServiceInterface.Stub(){
+
+
 
             public Bitmap getImage(int index) {
 
-
-                Bitmap Image = Bitmap.createBitmap(100, 10, Bitmap.Config.RGB_565);
-
-
-                String src = "http://192.168.0.11:8888/image.php?face="+index;
+                String src = "http://192.168.1.64:80/image.php?face="+index;
                 System.out.println(src);
                 //String src = "http://www.androidbegin.com/wp-content/uploads/2013/07/HD-Logo.gif";
                 Bitmap bitmap = null;
@@ -60,8 +52,27 @@ public class ImageService extends Service {
                 return bitmap;
             }
 
+            @Override
+            public int[] getListImage() throws RemoteException {
+
+                //faire le new int[] par rappor au nombre d'image du cache
+                int[] intArray = new int[3];
+
+                // ajouter avec un for les index du cache
+                intArray[0] = 1;
+                intArray[1] = 2;
+                intArray[2] = 3;
+
+
+                return intArray;
+            }
+
+
         };
     }
+
+
+
 
     @Override
     public void onDestroy() {
